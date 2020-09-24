@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record model="ir.ui.view" id="partner_category_form">
+            <field name="name">partner.category.form</field>
+            <field name="model">partner.category</field>
+            <field name="arch" type="xml">
+                <form name="Partner Category">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="zparent"/>
+                            <field name="full_name" invisible='1'/>
+                        </group>
+                        <group>
+                            <field name="active_id"/>
+                            <field name="partner_category" options="{'no_create': True}" attrs="{'invisible': [('active_id', '=', False)]}"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+         <record model="ir.ui.view" id="partner_category_tree">
+            <field name="name">partner.category.tree</field>
+            <field name="model">partner.category</field>
+            <field name="arch" type="xml">
+                <tree string="Partner Category">
+                    <field name="name"/>
+                    <!-- <field name="full_name"/> -->
+                    <field name="zparent"/>
+                    <!-- <field name="active_id"/>
+                    <field name="partner_category"/> -->
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_partner_category_development" model="ir.actions.act_window">
+            <field name="name">Partner Category</field>
+            <field name="res_model">partner.category</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem 
+            id="menu_partner_category_in_config" 
+            name="Partner Category" 
+            parent="contacts.res_partner_menu_config" 
+            action="action_partner_category_development" 
+            sequence="99"
+        />
+
+         <record model="ir.ui.view" id="inherit_res_partner_kanban_view">
+            <field name="name">res.partner.kanban</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="arch" type="xml">
+                <kanban class="o_res_partner_kanban">
+                    <field name="z_partner_category"/>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_respartner_order_inherit_search" model="ir.ui.view">
+            <field name="name">respartner.order.search.expand.filter</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="Partner Category" name="zz_partner_reference" domain="[('z_partner_category','!=',False)]"/>
+                    <filter string="Distributor" name="distributor" domain="[('distributor','=', True)]"/>
+                    <filter string="Transport Vendor" name="transport_vendor" domain="[('transport_vendor','=', True)]"/>
+                    <field name="ref" filter_domain="[('ref', 'ilike', self)]"/>
+                </xpath>
+            </field>
+        </record>
+       
+        
+        <record id="view_partner_form_inherite1" model="ir.ui.view">
+            <field name="name">res.partner.view.form.inherit1</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[2]/group//field[@name='user_id']" position="after">
+                    <field name="z_partner_category" options="{'no_create': True}"/>
+                    <field name="z_partner" invisible="1"/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[2]/group//field[@name='user_id']" position="before">
+                    <field name="customer"/>
+                    <field name="distributor"/>
+                    <field name="invoice_customer" invisible='1'/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[2]/group//field[@name='property_supplier_payment_term_id']" position="before">
+                    <field name="vendor"/>
+                    <field name="transport_vendor"/>
+                    <field name="invoice_vendor" invisible='1'/>
+                    <field name="invoice_filter" invisible='1'/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[2]/group//field[@name='property_payment_term_id']" position="after">
+                    <field name="preffered_transporter"/>
+                </xpath>
+            </field>
+        </record>
+
+        
+
+        <record id="account.res_partner_action_customer" model="ir.actions.act_window">
+            <field name="context">{"search_default_distributor": 1, "search_default_customer": 1}</field>     
+        </record>
+        <record id="account.res_partner_action_supplier" model="ir.actions.act_window">
+            <field name="context">{"search_default_supplier": 1, "search_default_transport_vendor": 1}</field>     
+        </record>
+
+
+        <record id="res_category_view_form_inherit2" model="ir.ui.view">
+            <field name="name">res.category.view.form.inherit2</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="sequence_id" options="{'no_create': True}" invisible='1'/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="product_template_form_inh">
+            <field name="name">product template form view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/notebook/page[@name='general_information']/group/group[1]/field[@name='categ_id']" position="after">
+                    <field name="z_partner" invisible="1"/>
+                    <field name="default_code1" invisible='1'/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="partner_sale_view_form_inherited">
+            <field name="name">partner.sale.view.form.inherited</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='other_information']//field[@name='user_id']" position="after">
+                    <field name="partner_reference"/>
+                </xpath>
+                <field name='partner_id' position='replace'>
+                    <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options='{"always_reload": True}'/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="partner_sale_view_tree_inherited">
+            <field name="name">partner.sale.view.tree.inherited</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="partner_reference"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_sale_order_inherit_search" model="ir.ui.view">
+            <field name="name">sale.order.search.expand.filter</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="Partner Category" name="z_partner_reference" domain="[('partner_reference','!=',False)]"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="purchase_partner_view_form_inherited" model="ir.ui.view">
+            <field name="name">purchase.partner.view.form.inherited</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='purchase_delivery_invoice']//field[@name='user_id']" position="after">
+                    <field name="partner_reference"/>
+
+                </xpath>
+                <field name='partner_id' position='replace'>
+                    <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
+                                placeholder="Name, TIN, Email, or Reference"
+                            />
+                        </field>
+            </field>
+        </record>
+
+        <record id="purchase_partner_view_tree_inherited" model="ir.ui.view">
+            <field name="name">purchase.partner.view.tree.inherited</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="partner_reference" />
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="view_purchase_order_inherit_search" model="ir.ui.view">
+            <field name="name">purchase.order.search.expand.filter</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                  <filter string="Partner Category" name="z_partner_reference" domain="[('partner_reference','!=',False)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- <record model="ir.ui.view" id="crm_lead_view_form_inherited">
+            <field name="name">crm.lead.view.form.inherited</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <field name='partner_id' position='replace'>
+                    <field name="partner_id" widget="res_partner_many2one"
+                                    context="{'default_name': contact_name,
+                                        'default_street': street,
+                                        'default_city': city,
+                                        'default_state_id': state_id,
+                                        'default_zip': zip,
+                                        'default_country_id': country_id,
+                                        'default_function': function,
+                                        'default_phone': phone,
+                                        'default_mobile': mobile,
+                                        'default_email': email_from,
+                                        'default_user_id': user_id,
+                                        'default_team_id': team_id,
+                                        'default_website': website,
+                                        'show_vat': True
+                                    }" groups="base.group_no_one"/>
+                </field>
+            </field>
+        </record> -->
+        
+        <!-- <record model="ir.ui.view" id="account_payment_view_form_inherited">
+            <field name="name">account.payment.view.form.inherited</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <field name='partner_id' position='replace'>
+                    <field name="partner_id" attrs="{'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))]}" context="{'default_is_company': True}"/>
+                </field>
+            </field>
+        </record> -->
+
+        <record model="ir.ui.view" id="account_move_view_form_inherited">
+            <field name="name">account.move.view.form.inherited</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <field name='partner_id' position='replace'>
+                    <field name="partner_id" widget="res_partner_many2one" nolabel="1"
+                                           context="{
+                                                'res_partner_search_mode': (context.get('default_type', 'entry') in ('out_invoice', 'out_refund', 'out_receipt') and 'customer') or (context.get('default_type', 'entry') in ('in_invoice', 'in_refund', 'in_receipt') and 'supplier') or False,
+                                                'show_address': 1, 'default_is_company': True, 'show_vat': True}"
+                                           options='{"always_reload": True, "no_quick_create": True}'
+                                           attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))]}"/>
+                                       </field>
+            </field>
+        </record>
+        
+</odoo>
